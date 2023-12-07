@@ -1,6 +1,6 @@
 # This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
 
-name: build-test-pipeline
+name: build-test-deploy-pipeline
 
 on:
   push:
@@ -31,7 +31,21 @@ jobs:
       run: npm install
     - name: Run Integration Tests
       run: npm test
+  
+  deploy:
+    needs: build
 
+    if: github.event_name == 'workflow_dispatch'
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Deploy 
+      uses: johnbeynon/render-deploy-action@v0.0.8
+      with:
+        service-id: ${{ secrets.RENDER_SERVICE_ID }}
+        api-key: ${{ secrets.RENDER_API_KEY }}
+        wait-for-success: true
   
   
 
